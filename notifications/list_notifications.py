@@ -35,7 +35,7 @@ def list_all_notifications(event, context):
     response = {
         'statusCode': 200,
         'body': json.dumps({
-            'items': items,
+            'awesomeItems': items,
             'numItems': len(items),
             'message': error_msg,
             'error_type': error_type

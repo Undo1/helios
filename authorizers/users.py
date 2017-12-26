@@ -1,7 +1,9 @@
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
+from botocore.exceptions import ClientError
 import logging
 import json
+from urllib.request import urlopen
 import os
 
 log = logging.getLogger()
@@ -37,13 +39,39 @@ def authorize(event, context):
 
     table = dynamodb.Table(os.environ['ACCESSTOKENS_TABLE'])
     dbresponse = table.scan(
-        FilterExpression=Attr('token').eq(token) & Attr('enabled').eq(True)
+        FilterExpression=Attr('token').eq(token)
     )
     if len(dbresponse['Items']) == 1:
-        policy = generatePolicy('allow', event['methodArn'])
-        context['user'] = dbresponse['Items'][0]['name']
+        if dbresponse['Items'][0]['enabled'] == True:
+            policy = generatePolicy('allow', event['methodArn'])
+            context['user'] = dbresponse['Items'][0]['name']
+        else:
+            policy = generatePolicy('deny', event['methodArn'])
     else:
-        policy = generatePolicy('deny', event['methodArn'])
+        # Check if metasmoke has a new token matching this one
+        url = "https://metasmoke.erwaysoftware.com/smoke_detector/check_token/{}".format(token)
+        with urlopen(url) as response:
+            ms_response = json.load(response)
+            if ms_response["exists"]:
+                # Add the token to our table
+                
+                item = {
+                    'token': token,
+                    'name': ms_response["owner_name"],
+                    'created_at': ms_response["created_at"],
+                    'modified_by': ms_response["owner_name"],
+                    'modified_at': ms_response["updated_at"],
+                    'enabled': True
+                }
+
+                table.put_item(Item=item)
+
+                # Allow the requests
+                policy = generatePolicy('allow', event['methodArn'])
+                context['user'] = item['name']
+            else:
+                # No token matches. Deny the request
+                policy = generatePolicy('deny', event['methodArn'])
 
     response = {
         'principalId': principalId,

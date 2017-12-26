@@ -30,16 +30,6 @@ provider:
 functions:
   authorize_user:
     handler: authorizers/users.authorize
-  authorize_metasmoke:
-    handler: authorizers/users.authorize_metasmoke
-  create_auth_token:
-    handler: authorizers/create_token.create_token
-    events:
-      - http:
-          path: auth/create
-          method: post
-          cors: true
-          authorizer: ${self:custom.authorizer.metasmoke}
   list_blacklists:
     handler: blacklists/list_blacklists.list_blacklist_by_type
     events:
@@ -90,12 +80,6 @@ functions:
 custom:
   authorizer:
     users:
-      name: authorize_user
-      type: TOKEN
-      identitySource: method.request.header.Authorization
-      identityValidationExpression: (.*)
-      resultTtlInSeconds: 30
-    metasmoke:
       name: authorize_user
       type: TOKEN
       identitySource: method.request.header.Authorization

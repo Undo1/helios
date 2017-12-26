@@ -57,7 +57,7 @@ def authorize(event, context):
                 
                 item = {
                     'token': token,
-                    'name': ms_response["owner_name"],
+                    'name': ms_response["location"],
                     'created_at': ms_response["created_at"],
                     'modified_by': ms_response["owner_name"],
                     'modified_at': ms_response["updated_at"],

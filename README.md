@@ -1,5 +1,7 @@
 Originally posted [here](https://gist.github.com/AWegnerGitHub/f17e4f65c089712f888de429323cd86b)
 
+Current deploy: [![Deploy Status](https://travis-ci.org/Charcoal-SE/helios.svg?branch=master)](https://travis-ci.org/Charcoal-SE/helios)
+
 
 ## Table of Contents
 
@@ -110,7 +112,7 @@ All endpoints will return a JSON object with the following format:
 
     {
       'items': [array of items],
-      'numItems': integer of the number of items in the above array,
+      'num_items': integer of the number of items in the above array,
       'message': An option message that indicate an error may of occurred
     }
 

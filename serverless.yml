@@ -116,13 +116,13 @@ resources:
             Projection:
               ProjectionType: "ALL"
             ProvisionedThroughput:
-              ReadCapacityUnits: 2
+              ReadCapacityUnits: 1
               WriteCapacityUnits: 1
         KeySchema:
           - AttributeName: "id"
             KeyType: "HASH"
         ProvisionedThroughput:
-          ReadCapacityUnits: 5
+          ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:service}-${opt:stage, self:provider.stage}-blacklists
     DdbNotifications:
